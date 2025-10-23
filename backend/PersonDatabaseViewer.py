@@ -1,15 +1,5 @@
 from app import app, db, Person
 
-def delete_entries():
-    with app.app_context():
-        all_persons = Person.query.all()
-
-        if len(all_persons) > 11:
-            for person in all_persons[11:]:
-                db.session.delete(person)
-            db.session.commit()
-            print("Deleted all entries with ID > 11")
-
 def view_database():
     with app.app_context():
         # Get all persons from database
@@ -44,4 +34,3 @@ def view_database():
 
 if __name__ == '__main__':
     view_database()
-    # delete_entries()
