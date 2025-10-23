@@ -1,4 +1,4 @@
-from app import app, db, Person
+from app import app, Person
 
 def view_database():
     with app.app_context():
