@@ -4,11 +4,13 @@ from flask_sqlalchemy import SQLAlchemy
 from sklearn import neighbors
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
 from sklearn.ensemble import RandomForestClassifier
+
 app = Flask(__name__)
 CORS(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///person.db'
 db = SQLAlchemy(app)
+
 
 class Person(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -16,6 +18,7 @@ class Person(db.Model):
     weight = db.Column(db.Integer)
     shoe_size = db.Column(db.Integer)
     gender = db.Column(db.String(10))
+
     def to_dict(self):
         return {
             'id': self.id,
@@ -24,9 +27,12 @@ class Person(db.Model):
             'shoe_size': self.shoe_size,
             'gender': self.gender,
         }
+
+
 @app.route('/api/hello')
 def hello_world():
     return jsonify({'message': 'Hello, World!'})
+
 
 @app.route('/api/predict', methods=['POST'])
 def predict_gender():
@@ -51,6 +57,7 @@ def predict_gender():
         import traceback
         traceback.print_exc()
         return jsonify({'error': 'An error occurred during prediction'}), 500
+
 
 def gender_classifier(height, weight, shoe_size):
     predictions = []
@@ -90,6 +97,7 @@ def gender_classifier(height, weight, shoe_size):
 
     return float(best_confidence), predictions[best_algo_index]
 
+
 def get_training_data():
     try:
         persons = Person.query.all()
@@ -108,14 +116,17 @@ def get_training_data():
 
     return details, genders
 
+
 @app.route('/api/add-person', methods=['POST'])
 def add_user():
     data = request.get_json()
     print(f"Received data: {data}")
-    new_user = Person(height=data.get('height'), weight=data.get('weight'), shoe_size=data.get('shoeSize'), gender=data.get('gender'))
+    new_user = Person(height=data.get('height'), weight=data.get('weight'), shoe_size=data.get('shoeSize'),
+                      gender=data.get('gender'))
     db.session.add(new_user)
     db.session.commit()
     return jsonify(new_user.to_dict()), 201
+
 
 if __name__ == '__main__':
     with app.app_context():

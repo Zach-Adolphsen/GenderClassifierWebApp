@@ -27,12 +27,12 @@ def populate_database():
     with app.app_context():
         # Clear existing data
         Person.query.delete()
-        
+
         # Add all training data
         for i in range(len(X)):
             height, weight, shoe_size = X[i]
             gender = Y[i]
-            
+
             person = Person(
                 height=height,
                 weight=weight,
@@ -40,17 +40,18 @@ def populate_database():
                 gender=gender
             )
             db.session.add(person)
-        
+
         # Commit all changes
         db.session.commit()
         print(f"Successfully added {len(X)} records to the database!")
-        
+
         # Verify the data
         all_persons = Person.query.all()
         print(f"\nTotal records in database: {len(all_persons)}")
         for person in all_persons:
             print(f"ID: {person.id}, Height: {person.height}, Weight: {person.weight}, "
                   f"Shoe Size: {person.shoe_size}, Gender: {person.gender}")
+
 
 if __name__ == '__main__':
     populate_database()
