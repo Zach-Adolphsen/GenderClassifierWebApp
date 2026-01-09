@@ -4,20 +4,29 @@ from flask_sqlalchemy import SQLAlchemy
 from sklearn import neighbors
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
 from sklearn.ensemble import RandomForestClassifier
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
 app = Flask(__name__)
 CORS(app)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///person.db'
+database_url = os.getenv('DATABASE_URL')
+if database_url and database_url.startswith('postgresql://'):
+    # Fix the PostgreSQL URL scheme for SQLAlchemy
+    database_url = database_url.replace('postgresql://', 'postgresql+psycopg2://', 1)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-
 class Person(db.Model):
+    __tablename__ = 'person_data'
     id = db.Column(db.Integer, primary_key=True)
-    height = db.Column(db.Integer)
-    weight = db.Column(db.Integer)
-    shoe_size = db.Column(db.Integer)
-    gender = db.Column(db.String(10))
+    height = db.Column(db.Float)
+    weight = db.Column(db.Float)
+    shoe_size = db.Column(db.Float)
+    gender = db.Column(db.String(6))
 
     def to_dict(self):
         return {
@@ -28,18 +37,15 @@ class Person(db.Model):
             'gender': self.gender,
         }
 
-
-@app.route('/api/hello')
-def hello_world():
-    return jsonify({'message': 'Hello, World!'})
-
-
 @app.route('/api/predict', methods=['POST'])
 def predict_gender():
     try:
         data = request.get_json()
 
-        height = float(data.get('height'))
+        if not data:
+            return jsonify({'error': 'No data provided'}), 400
+
+        height = float(data.get('height', 0))
         weight = float(data.get('weight'))
         shoe_size = float(data.get('shoeSize'))
         print(f"Received data: height={height}, weight={weight}, shoe_size={shoe_size}")
@@ -54,8 +60,6 @@ def predict_gender():
         return jsonify({'error': str(e)}), 400
     except Exception as e:
         print(f"Error: {str(e)}")
-        import traceback
-        traceback.print_exc()
         return jsonify({'error': 'An error occurred during prediction'}), 500
 
 
@@ -63,7 +67,10 @@ def gender_classifier(height, weight, shoe_size):
     predictions = []
     probabilities = []
 
-    X, Y = get_training_data()
+    try:
+        X, Y = get_training_data()
+    except Exception as e:
+        raise e
 
     newUserDetails = [[height, weight, shoe_size]]
 
@@ -109,20 +116,25 @@ def get_training_data():
         genders = []
 
         for person in persons:
-            details.append([person.height, person.weight, person.shoe_size])
+            details.append([float(person.height), float(person.weight), float(person.shoe_size)])
             genders.append(person.gender)
-    except Exception as e:
-        return {'error': str(e)}
 
-    return details, genders
+        return details, genders
+    except Exception as e:
+        print(f"Database Error: {str(e)}")
+        raise e
 
 
 @app.route('/api/add-person', methods=['POST'])
 def add_user():
     data = request.get_json()
     print(f"Received data: {data}")
-    new_user = Person(height=data.get('height'), weight=data.get('weight'), shoe_size=data.get('shoeSize'),
+
+    new_user = Person(height=data.get('height'),
+                      weight=data.get('weight'),
+                      shoe_size=data.get('shoeSize'),
                       gender=data.get('gender'))
+
     db.session.add(new_user)
     db.session.commit()
     return jsonify(new_user.to_dict()), 201
