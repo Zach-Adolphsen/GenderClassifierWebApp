@@ -37,6 +37,10 @@ class Person(db.Model):
             'gender': self.gender,
         }
 
+@app.get("/")
+def health():
+    return {"status": "ok"}
+
 @app.route('/api/predict', methods=['POST'])
 def predict_gender():
     try:
