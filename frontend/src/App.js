@@ -27,13 +27,19 @@ function App() {
           shoeSize: parseFloat(shoeSize)
         })
       });
+
+      if (!response.ok) {
+      const errorText = await response.text(); // Get the HTML/Text error from the server
+      console.error("Server Error Response:", errorText);
+      throw new Error(`Server returned ${response.status}`);
+    }
       
       const data = await response.json();
       setPrediction(data.prediction);
       setConfidence(data.confidence);
     } catch (error) {
-      console.error('Error:', error);
-      setPrediction('Error making prediction');
+      console.error('Detailed Error:', error);
+      setPrediction('Error making prediction: ' + error.message);
       setConfidence('');
     }
   };
