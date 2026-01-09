@@ -5,7 +5,7 @@ A full-stack application that predicts gender based on physical characteristics.
 ## Tech Stack
 - **Frontend**: React 19.1.1
 - **Backend**: Flask (Python)
-- **Database**: SQLite
+- **Database**: PostgreSQL
 
 ## Setup
 To properly run the application, you need to install the dependencies for both the frontend and backend
