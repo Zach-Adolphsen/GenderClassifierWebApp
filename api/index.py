@@ -49,8 +49,6 @@ def root():
 
 @app.route("/api/predict", methods=["POST", "GET"])
 def predict_gender():
-    if request.method == "GET":
-        return jsonify({"message": "You reached the endpoint with GET. The frontend should be using POST."})
     data = request.get_json()
 
     if not data:
