@@ -77,7 +77,7 @@ function App() {
       });
       
       const data = await response.json();
-      alert(`Added to database as ${gender}`);
+      alert(`Details noted, thanks!`);
       handleReset();
     } catch (error) {
       console.error('Error:', error);
@@ -87,8 +87,6 @@ function App() {
 
   return (
     <div className="App">
-      {/*<Analytics/>*/}
-      {/*<SpeedInsights/>*/}
       
       <header className="app-header">
         <h1>Gender Predictor</h1>
