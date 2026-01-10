@@ -1,5 +1,5 @@
 import './App.css';
-import { useState } from 'react';
+import {useEffect, useRef, useState} from 'react';
 import heightConversion from './Convert-Foot-Inches-to-Centimeters.png';
 import weightConversion from './Pounds-to-Kg.png';
 import shoeSizeConversion from './shoesize-conversion.png';
@@ -10,7 +10,16 @@ function App() {
   const [shoeSize, setShoeSize] = useState('');
   const [prediction, setPrediction] = useState('');
   const [confidence, setConfidence] = useState('');
-  const [activeTab, setActiveTab] = useState('height'); // New state for tabs
+  const [activeTab, setActiveTab] = useState('height');
+
+  const resultsRef = useRef(null);
+
+  useEffect(() => {
+    if (prediction && resultsRef.current) {
+      resultsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [prediction, confidence]);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -29,10 +38,10 @@ function App() {
       });
 
       if (!response.ok) {
-      const errorText = await response.text(); // Get the HTML/Text error from the server
-      console.error("Server Error Response:", errorText);
-      throw new Error(`Server returned ${response.status}`);
-    }
+          const errorText = await response.text();
+          console.error("Server Error Response:", errorText);
+          throw new Error(`Server returned ${response.status}`);
+      }
       
       const data = await response.json();
       setPrediction(data.prediction);
@@ -191,7 +200,7 @@ function App() {
       </div>
       
       {prediction && (
-        <div className="results-section">
+        <div className="results-section" ref={resultsRef}>
           <div className="results-card">
             <h2>Prediction Results</h2>
             <div className="result-item">

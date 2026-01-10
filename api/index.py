@@ -24,7 +24,6 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy()
 db.init_app(app)
 
-
 class Person(db.Model):
     __tablename__ = "person_data"
 

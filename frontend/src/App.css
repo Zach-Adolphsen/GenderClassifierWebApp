@@ -442,6 +442,11 @@ body {
   .container {
     grid-template-columns: 1fr;
   }
+
+    .form-section {
+        position: static;
+        top: auto;
+    }
 }
 
 @media (max-width: 768px) {
