@@ -89,7 +89,7 @@ function App() {
     <div className="App">
       
       <header className="app-header">
-        <h1>Gender Predictor</h1>
+        <h1>Gender Guesser</h1>
       </header>
 
       <div className="container">
