@@ -42,6 +42,9 @@ class Person(db.Model):
             "gender": self.gender,
         }
 
+with app.app_context():
+    db.create_all()
+
 @app.route("/")
 def root():
     return jsonify({"status": "Flask API is live"})
