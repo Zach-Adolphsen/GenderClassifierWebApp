@@ -43,6 +43,7 @@ function App() {
           throw new Error(`Server returned ${response.status}`);
       }
       
+      // eslint-disable-next-line no-unused-vars
       const data = await response.json();
       setPrediction(data.prediction);
       setConfidence(data.confidence);
@@ -76,6 +77,7 @@ function App() {
         })
       });
       
+      // eslint-disable-next-line no-unused-vars
       const data = await response.json();
       alert(`Details noted, thanks!`);
       handleReset();
